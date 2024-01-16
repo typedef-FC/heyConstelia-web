@@ -21,6 +21,9 @@
     <!-- jquery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
+    <!-- markdown -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.1/showdown.min.js"></script>
+
     <!-- basic page styling -->
     <style>
         body
@@ -90,6 +93,10 @@
     function update_response( str )
     {
         let formatted_text = str["message"].replace(/\n/g, "<br />");
+
+        var converter = new showdown.Converter();
+        formatted_text = converter.makeHtml(formatted_text);
+
         $("#response").html( formatted_text );
     }
 
