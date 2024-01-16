@@ -1,0 +1,138 @@
+<!--
+    @title
+        index.html
+
+    @author
+        typedef
+
+    @description
+        with the GUI module removed and /luar being pushed, heyConstelia has been changed to a Web UI
+-->
+<html lang="en">
+<head>
+
+    <!-- title -->
+    <title>Constelia AI</title>
+
+    <!-- stylesheet references -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono&display=swap" rel="stylesheet">
+
+    <!-- jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- basic page styling -->
+    <style>
+        body
+        {
+            background-color: #1a1a1a;
+            font-family: 'Ubuntu Mono', monospace;
+            color: white;
+        }
+
+        img
+        {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .to_center
+        {
+            display: grid;
+            align-items: center;
+            justify-content: center;
+        }
+
+        input[type="text"]
+        {
+            margin-top: 10px;
+            padding: 10px;
+            border: 0;
+            border-radius: 5px;
+            font-size: 16px;
+            box-shadow: 0 0 15px 4px rgba(0, 0, 0, 0.06);
+            background-color: #E8F0FE;
+            transition: all 0.3s;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        input[type="text"]:focus
+        {
+            box-shadow: 0 0 15px 4px rgba(0, 0, 0, 0.1);
+            padding: 22px;
+            background-color: #ffffff;
+        }
+
+        #response
+        {
+            margin-top: 10px;
+            max-width: 1024px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- web content -->
+<div id="title" class="to_center">
+    <img src="https://constelia.ai/constelia2.png"  alt="constelia2.png"/>
+    <input id="constelia_input" type="text" placeholder="Hey Constelia!"/>
+    <span id="response"></span>
+</div>
+
+<script>
+
+    /**
+     * updates the response content
+     * @param str
+     */
+    function update_response( str )
+    {
+        let formatted_text = str["message"].replace(/\n/g, "<br />");
+        $("#response").html( formatted_text );
+    }
+
+    /**
+     * checks if a user is choosing to submit their inquiry
+     */
+    $("#constelia_input" ).on( "keypress", ( function( e ) {
+
+        /**
+         * enter pressed?
+         */
+        if( e.which === 13 )
+        {
+            /**
+             * data we will send
+             * @type {*|jQuery}
+             */
+            const post_data = $("#constelia_input").val();
+
+            /**
+             * let user know the AI is thinking
+             */
+            update_response( {message: "Thinking... please wait..."} );
+
+            /**
+             * attempt to do this in Universe4 first since there is no possible way of knowing whether Universe4 or Constellation4 is open right now. both can be open, however they share different ports.
+             */
+            $.post("http://localhost:9282/luar", post_data )
+                .done( function(data) {
+                    return update_response( data );
+                })
+                .fail(function() {
+                    $.post("http://localhost:9283/luar", post_data )
+                        .done( function(data) {
+                            return update_response( data );
+                        })
+                        .fail( function() {
+                            alert("It appears Constellation4 and Universe4 are both closed. You should have at least one solution open to use heyConstelia.");
+                        });
+                });
+        }
+    }));
+</script>
+</body>
+
+</html>
