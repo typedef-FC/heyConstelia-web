@@ -92,7 +92,7 @@
      */
     function update_response( str )
     {
-        let formatted_text = str["message"].replace(/\n/g, "<br />");
+        let formatted_text = str["message"];
 
         var converter = new showdown.Converter();
         formatted_text = converter.makeHtml(formatted_text);
